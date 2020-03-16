@@ -2438,8 +2438,8 @@ namespace Project_FinchControl
             bool quitMenu = false;
             string menuChoice;
 
-            string sensorsToMonitor = "";
-            string rangeType = "";
+            string sensorsToMonitor = null;
+            string rangeType = null;
             int minMaxThresholdValue = 0;
             int timeToMonitor = 0;
 
@@ -2511,7 +2511,7 @@ namespace Project_FinchControl
             DisplayScreenHeader("Set Alarm");
 
             Console.WriteLine($"\tSensors to Monitor {sensorsToMonitor}");
-            Console.WriteLine($"\tRange Type: {0}", rangeType);
+            Console.WriteLine($"\tRange Type: {rangeType}");
             Console.WriteLine("\tMin/Max threshold value: " + minMaxThresholdValue);
             Console.WriteLine($"\tTime to monitor: {timeToMonitor}");
             Console.WriteLine();
