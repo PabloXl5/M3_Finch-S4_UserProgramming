@@ -93,7 +93,7 @@ namespace Project_FinchControl
                         break;
 
                     case "e":
-                        UserProgrammingDisplayMenuScreen(finchRobot);
+                        
                         break;
 
                     case "f":
@@ -2644,17 +2644,6 @@ namespace Project_FinchControl
         }
 
         #endregion
-
-        #region User Programming
-
-        static void UserProgrammingDisplayMenuScreen(Finch finchRobot)
-        {
-
-        }
-        #endregion
-
-
-
 
         #region FINCH ROBOT MANAGEMENT
 
