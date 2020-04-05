@@ -45,29 +45,215 @@ namespace Project_FinchControl
         /// <param name="args"></param>
         static void Main(string[] args)
         {
-           // SetTheme();
-
-            DisplayWelcomeScreen();
+            // SetTheme();
+            DisplayLoginRegister();
+            //DisplayWelcomeScreen();
             DisplayMenuScreen();
             DisplayClosingScreen();
         }
 
+
+        #region  LOGIN/PASSWORD
         /// <summary>
-        /// setup the console theme
+        /// *****************************************************************
+        /// *                 Login/Register Screen                         *
+        /// *****************************************************************
         /// </summary>
-        //static void SetTheme()
-        //{
-        //    Console.ForegroundColor = ConsoleColor.DarkBlue;
-        //    Console.BackgroundColor = ConsoleColor.White;
-        //}
+        static void DisplayLoginRegister()
+        {
+            Console.ForegroundColor = ConsoleColor.White;
+            Console.BackgroundColor = ConsoleColor.Black;
+
+            DisplayScreenHeader("\tWelcome to Finch Control\n\n\n");
+
+            Console.WriteLine("\t\t\tPlease Login/register\n\n");
+
+            Console.Write("\t\tAre you a registered user [ yes | no ]?");
+            if (Console.ReadLine().ToLower() == "yes")
+            {
+                DisplayLogin();
+            }
+            else
+            {
+                DisplayRegisterUser();
+                DisplayLogin();
+            }
+        }
+
+
 
         /// <summary>
         /// *****************************************************************
-        /// *                     Main Menu                                 *
+        /// *                          Login Screen                         *
         /// *****************************************************************
+        /// </summary>
+        static void DisplayLogin()
+        {
+            string userName;
+            string password;
+            string userResponse;
+            bool validLogin;
+
+            do
+            {
+                DisplayScreenHeader("Login");
+
+                Console.WriteLine();
+                Console.Write("\tEnter your user name:");
+                userName = Console.ReadLine();
+                Console.Write("\tEnter your password:");
+                password = Console.ReadLine();
+
+                validLogin = IsValidLoginInfo(userName, password);
+
+                Console.WriteLine();
+                if (validLogin)
+                {
+                    Console.WriteLine("\tYou are now logged in.");
+                }
+                else
+                {
+                    Console.WriteLine("\tIt appears either the user name or password is incorrect.");
+                    Console.WriteLine("\tPlease try again.");
+                    //userResponse = Console.ReadLine().ToLower();
+
+                    //breakloop();
+                }
+
+                DisplayContinuePrompt();
+            } while (!validLogin);
+        }
+
+        //static void breakloop()
+        //{
+        //    if (userResponse == "exit") ;
+        //    {
+        //        DisplayContinuePrompt();
+        //    }
+        //}
+
+        /// <summary>
+        /// check user login
+        /// </summary>
+        /// <param name="userName">user name entered</param>
+        /// <param name="password">password entered</param>
+        /// <returns>true if valid user</returns>
+        static bool IsValidLoginInfo(string userName, string password)
+        {
+            List<(string userName, string password)> registeredUserLoginInfo = new List<(string userName, string password)>();
+            bool validUser = false;
+
+            registeredUserLoginInfo = ReadLoginInfoData();
+
+            //
+            // loop through the list of registered user login tuples and check each one against the login info
+            //
+            foreach ((string userName, string password) userLoginInfo in registeredUserLoginInfo)
+            {
+                if ((userLoginInfo.userName == userName) && (userLoginInfo.password == password))
+                {
+                    validUser = true;
+                    break;
+                }
+            }
+
+            return validUser;
+        }
+
+        /// <summary>
+        /// *****************************************************************
+        /// *                       Register Screen                         *
+        /// *****************************************************************
+        /// write login info to data file
+        /// </summary>
+        static void DisplayRegisterUser()
+        {
+            string userName;
+            string password;
+
+            DisplayScreenHeader("Register");
+
+            Console.Write("\tEnter your user name:");
+            userName = Console.ReadLine();
+            Console.Write("\tEnter your password:");
+            password = Console.ReadLine();
+
+            WriteLoginInfoData(userName, password);
+
+            Console.WriteLine();
+            Console.WriteLine("\tYou entered the following information and it has be saved.");
+            Console.WriteLine($"\tUser name: {userName}");
+            Console.WriteLine($"\tPassword: {password}");
+
+            DisplayContinuePrompt();
+        }
+
+        /// <summary>
+        /// read login info from data file
+        /// Note: no error or validation checking
+        /// </summary>
+        /// <returns>list of tuple of user name and password</returns>
+        static List<(string userName, string password)> ReadLoginInfoData()
+        {
+            string dataPath = @"Data/LoginData.txt";
+
+            string[] loginInfoArray;
+            (string userName, string password) loginInfoTuple;
+
+            List<(string userName, string password)> registeredUserLoginInfo = new List<(string userName, string password)>();
+
+            loginInfoArray = File.ReadAllLines(dataPath);
+
+            //
+            // loop through the array
+            // split the user name and password into a tuple
+            // add the tuple to the list
+            //
+            foreach (string loginInfoText in loginInfoArray)
+            {
+                //
+                // use the Split method to separate the user name and password into an array
+                //
+                loginInfoArray = loginInfoText.Split(',');
+
+                loginInfoTuple.userName = loginInfoArray[0];
+                loginInfoTuple.password = loginInfoArray[1];
+
+                registeredUserLoginInfo.Add(loginInfoTuple);
+
+            }
+
+            return registeredUserLoginInfo;
+        }
+
+        /// <summary>
+        /// write login info to data file
+        /// Note: no error or validation checking
+        /// </summary>
+        static void WriteLoginInfoData(string userName, string password)
+        {
+            string dataPath = @"Data/LoginData.txt";
+            string loginInfoText;
+
+            loginInfoText = userName + "," + password + "\n";
+            //
+            // use the AppendAllText method to not overwrite the existing logins
+            //
+            File.AppendAllText(dataPath, loginInfoText);
+        }
+        #endregion
+
+        /// <summary>
+        ///  Main Menu          
         /// </summary>
         static void DisplayMenuScreen()
         {
+            (ConsoleColor foregroundColor, ConsoleColor backgroundColor) themeColors;
+
+            themeColors = ReadThemeData();
+
+            Console.ForegroundColor = themeColors.foregroundColor;
+            Console.BackgroundColor = themeColors.backgroundColor;
             Console.CursorVisible = true;
 
             bool quitApplication = false;
@@ -128,7 +314,7 @@ namespace Project_FinchControl
                         break;
 
                     case "q":
-                        DisplayDisconnectFinchRobot(finchRobot);
+                        DisplayQuit(finchRobot);
                         quitApplication = true;
                         break;
 
@@ -145,10 +331,9 @@ namespace Project_FinchControl
         #region SET THEME
 
         /// <summary>
-        /// *****************************************************************
-        /// *                     Set Theme Menu                          *
-        /// *****************************************************************
+        /// setup the console theme
         /// </summary>
+        /// 
         static void DisplaySetThemeMenuScreen(Finch finchRobot)
         {
             (ConsoleColor foregroundColor, ConsoleColor backgroundColor) themeColors;
@@ -214,9 +399,9 @@ namespace Project_FinchControl
 
                 DisplayScreenHeader("\tSet Application Theme\n\n");
 
-                Console.WriteLine("\tRed       Green       Yellow       Cyan       Blue");
-                Console.WriteLine("\tDarkRed   DarkGreen   DarkYellow   DarkCyan   DarkBlue");
-                Console.WriteLine("\tGray      DrakGray    DarkMagenta");
+                Console.WriteLine("\tRed       Green       Yellow       Cyan       Blue       Magenta");
+                Console.WriteLine("\tDarkRed   DarkGreen   DarkYellow   DarkCyan   DarkBlue   DarkMagenta");
+                Console.WriteLine("\tGray      DrakGray");
                 Console.WriteLine("\tBlack");
                 Console.WriteLine("\tWhite\n\n");
 
@@ -3060,7 +3245,7 @@ namespace Project_FinchControl
 
         /// <summary>
         /// *****************************************************************
-        /// *               Disconnect the Finch Robot                      *
+        /// *              Quit/Disconnect the Finch Robot                      *
         /// *****************************************************************
         /// </summary>
         /// <param name="finchRobot">finch robot object</param>
@@ -3068,16 +3253,37 @@ namespace Project_FinchControl
         {
             Console.CursorVisible = false;
 
-            DisplayScreenHeader("Disconnect Finch Robot");
+            DisplayScreenHeader("\tDisconnect Finch Robot\n");
 
-            Console.WriteLine("\tAbout to disconnect from the Finch robot.");
+            Console.WriteLine("\t\tAbout to disconnect from the Finch robot.\n\n\n");
             DisplayContinuePrompt();
 
             finchRobot.disConnect();
 
-            Console.WriteLine("\tThe Finch robot is now disconnect.");
+            Console.Clear();
 
-            DisplayMenuPrompt("Main Menu");
+            Console.WriteLine("\t\tThe Finch robot is now disconnected.\n\n");
+            DisplayMenuPrompt("MainMenu");
+        }
+
+        static void DisplayQuit(Finch finchRobot)
+        {
+            Console.CursorVisible = false;
+
+            //Console.ForegroundColor = ConsoleColor.White;
+            //Console.BackgroundColor = ConsoleColor.Black;
+
+            DisplayScreenHeader("\tDisconnect Finch Robot\n");
+
+            Console.WriteLine("\t\tAbout to disconnect from the Finch robot.\n\n\n");
+            DisplayContinuePrompt();
+
+            finchRobot.disConnect();
+
+            Console.Clear();
+
+            Console.WriteLine("\n\n\t\t\tThe Finch robot is now disconnected.\n");
+            DisplayExitPrompt();
         }
 
         /// <summary>
@@ -3125,6 +3331,7 @@ namespace Project_FinchControl
         static void DisplayWelcomeScreen()
         {
             Console.CursorVisible = false;
+
             Console.ForegroundColor = ConsoleColor.White;
             Console.BackgroundColor = ConsoleColor.Black;
 
@@ -3145,12 +3352,15 @@ namespace Project_FinchControl
         {
             Console.CursorVisible = false;
 
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.BackgroundColor = ConsoleColor.DarkGreen;
+
             Console.Clear();
-            Console.WriteLine();
-            Console.WriteLine("\t\tThank you for using Finch Control!");
+
+            Console.WriteLine("\n\n\n\n\n\n\n\n\n\t\t\tThank you for using Finch Control!");
             Console.WriteLine();
 
-            DisplayContinuePrompt();
+            DisplayQuitPrompt();
         }
 
         /// <summary>
@@ -3160,6 +3370,20 @@ namespace Project_FinchControl
         {
             Console.WriteLine();
             Console.WriteLine("\t\t\tPress any key to continue.");
+            Console.ReadKey();
+        }
+
+        static void DisplayExitPrompt()
+        {
+            Console.WriteLine();
+            Console.WriteLine("\t\t\tPress any key to Exit Application.");
+            Console.ReadKey();
+        }
+
+        static void DisplayQuitPrompt()
+        {
+            Console.WriteLine();
+            Console.WriteLine("\t\t\t\tPress any key to Quit.");
             Console.ReadKey();
         }
 
