@@ -3120,7 +3120,7 @@ namespace Project_FinchControl
                         break;
 
                     case Command.LEDOFF:
-                        finchRobot.setLED(ledBrightness, ledBrightness, ledBrightness);
+                        finchRobot.setLED(0, 0, 0);
                         commandFeedback = Command.LEDOFF.ToString();
                         break;
 
@@ -3214,9 +3214,21 @@ namespace Project_FinchControl
             commandParameters.ledBrightness = 0;
             commandParameters.waitSeconds = 0;
 
-            GetValidInteger("\tEnter Motor Speed [1 - 255]:", 1, 255, out commandParameters.motorSpeed);
-            GetValidInteger("\tEnter LED Brightness [1 - 255]:", 1, 255, out commandParameters.motorSpeed);
-            GetValidDouble("\tEnter Wait in Seconds:", 0, 10, out commandParameters.waitSeconds);
+
+            Console.Write("\tEnter Motor Speed [1 - 255]: ");
+            commandParameters.motorSpeed = int.Parse(Console.ReadLine());
+
+            Console.Write("\tEnter LED brightness [1 - 255]: ");
+            commandParameters.ledBrightness = int.Parse(Console.ReadLine());
+
+            Console.Write("\tWait in seconds: ");
+            commandParameters.waitSeconds = double.Parse(Console.ReadLine());
+
+            DisplayContinuePrompt();
+
+            //GetValidInteger("\tEnter Motor Speed [1 - 255]:", 1, 255, out commandParameters.motorSpeed);
+            //GetValidInteger("\tEnter LED Brightness [1 - 255]:", 1, 255, out commandParameters.ledBrightness);
+            //GetValidDouble("\tEnter Wait in Seconds:", 0, 10, out commandParameters.waitSeconds);
 
             Console.WriteLine();
             Console.WriteLine($"\tMotor speed: {commandParameters.motorSpeed}");
@@ -3228,16 +3240,35 @@ namespace Project_FinchControl
             return commandParameters;
         }
 
-        private static void GetValidDouble(string v1, int v2, int v3, out double waitSeconds)
-        {
-            throw new NotImplementedException();
-        }
+        //private static void GetValidDouble(string v1, int v2, int v3, out double waitSeconds)
+        //{
+        //    throw new NotImplementedException();
+        //}
 
-        private static void GetValidInteger(string v1, int v2, int v3, out int motorSpeed)
-        {
-            throw new NotImplementedException();
-        }
+        //private static void GetValidInteger()
+        //{
+        //    (int motorSpeed, int ledBrightness, double waitSeconds) commandParameters;
 
+        //    Console.Write("\tEnter Motor Speed [1 - 255]: ");
+        //    commandParameters.motorSpeed = int.Parse(Console.ReadLine());
+
+        //    Console.Write("\tEnter LED brightness [1 - 255]: ");
+        //    commandParameters.ledBrightness = int.Parse(Console.ReadLine());
+
+        //    //return commandParameters;
+        //}
+
+        //private static void GetValidDouble()
+        //{
+        //    (int motorSpeed, int ledBrightness, double waitSeconds) commandParameters;
+
+        //    Console.Write("\tWait in seconds: ");
+        //    commandParameters.waitSeconds = double.Parse(Console.ReadLine());
+
+        //    DisplayContinuePrompt();
+
+        //    //return commandParameters;
+        //}
 
         #endregion
 
